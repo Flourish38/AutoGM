@@ -31,7 +31,11 @@ namespace AutoGM
                 case "stop":
                     return "stop";
                 case "r":
+                case "ra":
+                case "rda":
                 case "roll":
+                case "rolladvantage":
+                case "rolldisadvantage":
                     ParseRoll(inputArr);
                     break;
                 case "rs":
@@ -54,6 +58,22 @@ namespace AutoGM
 
         static void ParseRoll(string[] input)
         {
+            int advantage = 0;
+            if (input[0].Contains("a"))
+            {
+                if (input[0].Contains("disa") || input[0].Contains("da"))
+                {
+                    advantage = -1;
+                }
+                else
+                {
+                    advantage = 1;
+                }
+                if(input.Length == 1)
+                {
+                    Console.WriteLine("Warning: despite rolling advantage/disadvantage, since you did not specify a roll, the previous roll command will execute as it was typed.");
+                }
+            }
             switch (input.Length)
             {
                 case 1:
@@ -67,8 +87,28 @@ namespace AutoGM
                 case 2:
                     try
                     {
-                        Console.WriteLine(Roll(input[1]));
+                        int roll = Roll(input[1]);
+                        int roll2;
+                        if(advantage != 0)
+                        {
+                            roll2 = Roll(input[1]);
+                            switch (advantage)
+                            {
+                                case -1:
+                                    Console.WriteLine(Math.Min(roll, roll2));
+                                    break;
+                                case 1:
+                                    Console.WriteLine(Math.Max(roll, roll2));
+                                    break;
+                            }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine(roll);
+                        }
                         lastRoll = input;
+                        
                     }
                     catch
                     {
